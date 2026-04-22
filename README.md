@@ -25,6 +25,11 @@ Then open http://127.0.0.1:5000
 - `Run telephone directory app`
 - `Run telephone directory smoke test in venv`
 
+## Deploy on Render
+
+- Build command: `pip install -r requirements.txt`
+- Start command: `gunicorn app:app`
+
 ## Workbook notes
 
 The app automatically uses the first `.xlsx` file in the project root and ignores temporary Excel lock files starting with `~$`.
