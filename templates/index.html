@@ -53,16 +53,6 @@
       </header>
 
       <main>
-        <section class="results-header">
-          <div>
-            <p class="section-label">Results</p>
-            <h2 id="results-title">Top directory matches</h2>
-          </div>
-          <p class="results-meta" id="results-meta">
-            Showing {{ initial_results|length }} entries from {{ metadata.total_records }} total records.
-          </p>
-        </section>
-
         <section
           class="results-grid"
           id="results-grid"
@@ -70,7 +60,7 @@
         >
           {% for record in initial_results %}
           <article class="result-card">
-            <p class="card-kicker">Directory Entry</p>
+            <p class="card-kicker">{{ record.get('_role') or 'Directory Entry' }}</p>
             <h3>{{ record['_display_name'] }}</h3>
             <div class="result-fields">{% for column in metadata.display_columns %}{% if record.get(column) %}<div class="field-row"><p class="field-label">{{ column }}</p><p class="field-value">{{ record.get(column) }}</p></div>{% endif %}{% endfor %}</div>
           </article>

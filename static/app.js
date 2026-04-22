@@ -1,8 +1,7 @@
 const input = document.querySelector("#search-input");
 const form = document.querySelector("#search-form");
 const grid = document.querySelector("#results-grid");
-const resultsTitle = document.querySelector("#results-title");
-const resultsMeta = document.querySelector("#results-meta");
+
 const resultCount = document.querySelector("#result-count");
 const emptyStateTemplate = document.querySelector("#empty-state-template");
 const displayColumns = JSON.parse(grid.dataset.columns || "[]");
@@ -22,7 +21,7 @@ function renderResults(results, query, totalRecords) {
 
     const kicker = document.createElement("p");
     kicker.className = "card-kicker";
-    kicker.textContent = "Directory Entry";
+    kicker.textContent = record._role || "Directory Entry";
 
     const heading = document.createElement("h3");
     heading.textContent = record._display_name || "Unnamed Entry";
@@ -51,10 +50,6 @@ function renderResults(results, query, totalRecords) {
   }
 
   const shownCount = results.length;
-  resultsTitle.textContent = query ? `Matches for "${query}"` : "Top directory matches";
-  resultsMeta.textContent = query
-    ? `Showing ${shownCount} matching entries from ${totalRecords} total records.`
-    : `Showing ${shownCount} entries from ${totalRecords} total records.`;
   resultCount.textContent = totalRecords;
 }
 

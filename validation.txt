@@ -1,6 +1,6 @@
 workbook=Telephone Directory-2026.xlsx
 sheet=Sheet1
-total_records=249
+total_records=205
 display_columns=['FACULTY', 'EXTN.', 'RESI.']
-query_a_results=169
-first_record=Dr. Abhay H. Pande
+query_a_results=194
+first_record=Mr. Manoj Tiwari

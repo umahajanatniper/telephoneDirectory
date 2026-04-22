@@ -92,6 +92,16 @@ def choose_header_row(rows: list[tuple[Any, ...]]) -> tuple[int, list[str]]:
     raise ValueError("Unable to detect a usable header row in the workbook.")
 
 
+def infer_role_column(headers: list[str]) -> str | None:
+    """Return the first column whose header looks like a role/department field."""
+    role_keywords = ("role", "department", "dept", "designation", "section", "office", "division")
+    for header in headers:
+        norm = normalize_header(header)
+        if any(kw in norm for kw in role_keywords):
+            return header
+    return None
+
+
 def infer_name_columns(headers: list[str]) -> list[str]:
     prioritized_keywords = (
         "name",
@@ -120,8 +130,7 @@ def infer_name_columns(headers: list[str]) -> list[str]:
 
 def select_display_columns(headers: list[str]) -> list[str]:
     preferred_keywords = (
-        "faculty",
-        "name",
+        "role",
         "designation",
         "department",
         "section",
@@ -135,19 +144,17 @@ def select_display_columns(headers: list[str]) -> list[str]:
         "office",
     )
     normalized = {header: normalize_header(header) for header in headers}
+    name_columns = set(infer_name_columns(headers))
     selected: list[str] = []
-    for header in infer_name_columns(headers):
-        if header not in selected:
-            selected.append(header)
     for keyword in preferred_keywords:
         for header in headers:
-            if header in selected:
+            if header in selected or header in name_columns:
                 continue
             if keyword in normalized[header]:
                 selected.append(header)
                 break
     if not selected:
-        return headers[:4]
+        return [h for h in headers[:4] if h not in name_columns]
     return selected[:6]
 
 
@@ -194,6 +201,8 @@ def _load_directory_cached(workbook_path: str, workbook_mtime: int) -> tuple[lis
             for position in range(len(headers))
         }
         record["_display_name"] = next((record.get(column, "") for column in name_columns if record.get(column, "")), "Unnamed Entry")
+        role_col = infer_role_column(headers)
+        record["_role"] = record.get(role_col, "").strip() if role_col else ""
         record["_search_blob"] = build_search_blob(record)
         records.append(record)
 
