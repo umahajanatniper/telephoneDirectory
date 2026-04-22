@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Telephone Directory</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">Institution Telephone Directory</p>
+          <h1>Find any contact by typing a name.</h1>
+          <p class="hero-text">
+            Search across the uploaded telephone directory with instant matching,
+            ranked results, and clean contact cards.
+          </p>
+          <form class="search-panel" id="search-form" autocomplete="off">
+            <label class="search-label" for="search-input">Search directory</label>
+            <div class="search-row">
+              <input
+                id="search-input"
+                name="q"
+                type="search"
+                placeholder="Type a name, department, extension, or phone number"
+              />
+              <button type="submit">Search</button>
+            </div>
+            <p class="search-hint">Live results update as you type.</p>
+          </form>
+        </div>
+        <aside class="hero-panel">
+          <div class="metric">
+            <span class="metric-label">Workbook</span>
+            <strong>{{ metadata.workbook_name }}</strong>
+          </div>
+          <div class="metric">
+            <span class="metric-label">Sheet</span>
+            <strong>{{ metadata.sheet_name }}</strong>
+          </div>
+          <div class="metric">
+            <span class="metric-label">Entries</span>
+            <strong id="result-count">{{ metadata.total_records }}</strong>
+          </div>
+        </aside>
+      </header>
+
+      <main>
+        <section class="results-header">
+          <div>
+            <p class="section-label">Results</p>
+            <h2 id="results-title">Top directory matches</h2>
+          </div>
+          <p class="results-meta" id="results-meta">
+            Showing {{ initial_results|length }} entries from {{ metadata.total_records }} total records.
+          </p>
+        </section>
+
+        <section
+          class="results-grid"
+          id="results-grid"
+          data-columns='{{ metadata.display_columns|tojson }}'
+        >
+          {% for record in initial_results %}
+          <article class="result-card">
+            <p class="card-kicker">Directory Entry</p>
+            <h3>{{ record['_display_name'] }}</h3>
+            <div class="result-fields">{% for column in metadata.display_columns %}{% if record.get(column) %}<div class="field-row"><p class="field-label">{{ column }}</p><p class="field-value">{{ record.get(column) }}</p></div>{% endif %}{% endfor %}</div>
+          </article>
+          {% endfor %}
+        </section>
+
+        <template id="empty-state-template">
+          <article class="empty-state">
+            <h3>No matching contacts</h3>
+            <p>Try a broader name, department keyword, extension, or phone number.</p>
+          </article>
+        </template>
+      </main>
+    </div>
+
+    <script>
+      window.directoryConfig = {
+        initialTotal: {{ metadata.total_records }},
+      };
+    </script>
+    <script src="{{ url_for('static', filename='app.js') }}" defer></script>
+  </body>
+</html>
