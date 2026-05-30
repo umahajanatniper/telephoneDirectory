@@ -1,6 +1,6 @@
 workbook=Telephone Directory-2026.xlsx
 sheet=Sheet1
-total_records=205
-display_columns=['FACULTY', 'EXTN.', 'RESI.']
-query_a_results=194
+total_records=204
+display_columns=['ROLE', 'EXTN.', 'RESI.']
+query_a_results=193
 first_record=Mr. Manoj Tiwari

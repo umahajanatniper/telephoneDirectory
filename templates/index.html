@@ -14,13 +14,22 @@
   </head>
   <body>
     <div class="page-shell">
-      <header class="hero">
-        <div class="hero-copy">
+      <header class="topbar">
+        <div class="brand-block">
           <p class="eyebrow">Institution Telephone Directory</p>
-          <h1>Find any contact by typing a name.</h1>
+          <p class="brand-name">NIPER Management Contact Hub</p>
+        </div>
+        <p class="topbar-pill">
+          <span id="total-records">{{ metadata.total_records }}</span> indexed contacts
+        </p>
+      </header>
+
+      <section class="hero">
+        <div class="hero-copy">
+          <h1>Find any contact in seconds.</h1>
           <p class="hero-text">
-            Search across the uploaded telephone directory with instant matching,
-            ranked results, and clean contact cards.
+            Search faculty and staff by name, department, extension, or phone number.
+            Results are ranked instantly for quick, accurate lookup.
           </p>
           <form class="search-panel" id="search-form" autocomplete="off">
             <label class="search-label" for="search-input">Search directory</label>
@@ -33,12 +42,20 @@
               />
               <button type="submit">Search</button>
             </div>
-            <p class="search-hint">Live results update as you type.</p>
+            <p class="search-hint">Results update as you type.</p>
           </form>
         </div>
-      </header>
+      </section>
 
       <main>
+        <section class="results-header">
+          <div>
+            <p class="section-label">Directory Results</p>
+            <h2 id="results-title">All contacts</h2>
+          </div>
+          <p class="results-meta" id="results-meta">Showing all indexed contacts.</p>
+        </section>
+
         <section
           class="results-grid"
           id="results-grid"
@@ -62,11 +79,6 @@
       </main>
     </div>
 
-    <script>
-      window.directoryConfig = {
-        initialTotal: {{ metadata.total_records }},
-      };
-    </script>
     <script src="{{ url_for('static', filename='app.js') }}" defer></script>
   </body>
 </html>

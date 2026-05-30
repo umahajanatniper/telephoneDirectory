@@ -1,14 +1,17 @@
 const input = document.querySelector("#search-input");
 const form = document.querySelector("#search-form");
 const grid = document.querySelector("#results-grid");
-
-const resultCount = document.querySelector("#result-count");
+const resultsTitle = document.querySelector("#results-title");
+const resultsMeta = document.querySelector("#results-meta");
+const totalRecordsBadge = document.querySelector("#total-records");
+const submitButton = form.querySelector('button[type="submit"]');
 const emptyStateTemplate = document.querySelector("#empty-state-template");
 const displayColumns = JSON.parse(grid.dataset.columns || "[]");
+const initialTotal = Number(totalRecordsBadge?.textContent || 0);
 
 let activeController;
 
-function renderResults(results, query, totalRecords) {
+function renderResults(results, query, totalRecordsCount) {
   grid.innerHTML = "";
 
   if (!results.length) {
@@ -49,8 +52,27 @@ function renderResults(results, query, totalRecords) {
     grid.append(article);
   }
 
-  const shownCount = results.length;
-  resultCount.textContent = totalRecords;
+  if (resultsTitle) {
+    resultsTitle.textContent = query
+      ? `${results.length} result${results.length === 1 ? "" : "s"} for "${query}"`
+      : "All contacts";
+  }
+
+  if (resultsMeta) {
+    resultsMeta.textContent = query
+      ? `Showing ${results.length} of ${totalRecordsCount} indexed contacts.`
+      : `Showing all ${totalRecordsCount} indexed contacts.`;
+  }
+
+  if (totalRecordsBadge) {
+    totalRecordsBadge.textContent = totalRecordsCount;
+  }
+}
+
+function setLoading(isLoading) {
+  grid.classList.toggle("is-loading", isLoading);
+  grid.setAttribute("aria-busy", String(isLoading));
+  submitButton.disabled = isLoading;
 }
 
 async function fetchResults(query) {
@@ -74,6 +96,7 @@ function queueSearch() {
   window.clearTimeout(debounceHandle);
   debounceHandle = window.setTimeout(async () => {
     const query = input.value.trim();
+    setLoading(true);
     try {
       const payload = await fetchResults(query);
       renderResults(payload.results, payload.query, payload.metadata.total_records);
@@ -81,9 +104,20 @@ function queueSearch() {
       if (error.name === "AbortError") {
         return;
       }
-      resultsMeta.textContent = "Unable to load results right now.";
+      if (resultsMeta) {
+        resultsMeta.textContent = "Unable to load results right now.";
+      }
+    } finally {
+      setLoading(false);
     }
-  }, 180);
+  }, 200);
+}
+
+if (resultsTitle) {
+  resultsTitle.textContent = "All contacts";
+}
+if (resultsMeta) {
+  resultsMeta.textContent = `Showing all ${initialTotal} indexed contacts.`;
 }
 
 input.addEventListener("input", queueSearch);
